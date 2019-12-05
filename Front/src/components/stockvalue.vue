@@ -1,14 +1,17 @@
 <template>
+<div>
   <div>€{{value}}</div>
+  <p>{{error}}</p>
+</div>
 </template>
 
 <script>
-import axios from "axios";
 export default {
   name: "stockvalue",
   data() {
     return {
-      value: 0
+      value: 0,
+      error: ''
     };
   },
   created: function() {
@@ -23,9 +26,12 @@ export default {
   },
   methods: {
       getValue: function() {
-      axios.get("http://localhost:5000/api/stockvalue").then(response => {
+      this.$http.get("stockvalue").then(response => {
         if (response.status >= 200 && response.status < 300) {
           this.value = response.data.data;
+        }
+        else {
+          this.error = 'Something went wrong, please reload the page'
         }
       });
     }

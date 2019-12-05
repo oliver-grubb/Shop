@@ -1,8 +1,11 @@
 const express = require('express')
+var cors = require('cors');
 const app = express()
 const port = 5000
 
 app.use(express.json());
+app.use(cors());
+
 app.get('/', (req, res) => res.send('Hello'))
 
 app.get('/api/stock', (req, res) => {
@@ -58,9 +61,13 @@ app.delete('/api/stock/:id', (req, res) => {
     if (!stockToDelete) {
         res.status(404).send("Course with given id wasn't found");
     }
-    const index = stock.indexOf(stockToDelete);
-    stock.splice(index, 1);
-    res.send(stock);
+    else {
+        const index = stock.indexOf(stockToDelete);
+        stock.splice(index, 1);
+        restructureStock();
+        res.send(stock);
+    }
+
 
 })
 //Assumes all currency is either EUR, USD or GBP
@@ -81,6 +88,11 @@ const validatestock = function (newstock) {
         }
     }
     else return false;
+}
+const restructureStock = function () {
+    for (var i = 0; i < stock.length; i++) {
+        stock[i].id = i;
+    }
 }
 const USDtoEUR = 0.90;
 const GBPtoEUR = 1.17;

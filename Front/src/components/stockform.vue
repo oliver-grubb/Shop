@@ -1,5 +1,6 @@
 <template>
 <div>
+    <p>{{error}}</p>
     <li class='list' v-for='item in stock' v-bind:key='item.name'>
         ID:{{item.id}} - {{item.name}} costs {{item.price}} {{item.currency}} x{{item.quantity}}
     </li>
@@ -7,31 +8,36 @@
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
     name: 'stockform',
     data() {
         return {
-            stock : []
+            stock : [],
+            error : '',
         }
     },
-    created: function () {
-        //this.getStock()
-        
-    },
+    
     mounted() {
       Event.$on('reloadstock', () => {
           this.getStock();
+      });
+            this.getStock();
+
+      Event.$on('getStockLength', () => {
+          Event.$emit('stockLength', this.stock.length);
       })
 
-      this.getStock();
   },
     methods: {
         getStock: function() {
-            axios.get('http://localhost:5000/api/stock').then((response) => {
+            this.$http.get("stock").then((response) => {
+                this.error = '';
                 if(response.status>=200 && response.status<300) {
                 this.stock = response.data.data;
+                }
+                else {
+                    this.error = 'Something went wrong, please try again later'
                 }
                 
             });
